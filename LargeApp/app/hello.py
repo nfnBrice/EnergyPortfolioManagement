@@ -1,6 +1,6 @@
 #IMPORT FLASK
 from flask import Flask, render_template, json, request
-from flaskext.mysql import MySQL
+from flask.ext.mysql import MySQL
 from werkzeug import generate_password_hash, check_password_hash
 from flask import session
 from flask import redirect
@@ -39,6 +39,46 @@ def showSignin():
 def project():
     return render_template('projects.html')	
 
+@app.route("/showCreatePortfolio")
+def showCreatePortfolio():
+    return render_template('createPortfolio.html')
+
+#page de tutoriel à faire avant cette page la 
+@app.route('/createPortfolio', methods=['POST','GET'])
+def createPortfolio():
+	#create mysql connection
+	conn = mysql.connect()
+	#create cursor
+	cursor = conn.cursor()
+	try: 
+		# read the posted values from the UI
+		_amount = request.form['inputAmount']
+		_horizon = request.form['inputHorizon']
+		_knowledge = request.form['inputKnowledge']
+
+		# validate the received values
+		if _amount and _horizon and _knowledge:
+			if _knowledge is 0:
+				return render_template('tutorial.html')
+			else :
+				#find portfolio 
+				cursor.callproc('sp_createPortfolio', (_amount, _horizon, session['user']))
+				data = cursor.fetchall()
+
+				if len(data) is 0:
+					conn.commit()
+					return json.dumps({'message':'Portfolio created successfully !'})
+				else:
+					return json.dumps({'error':str(data[0])})
+	
+		else:
+			return json.dumps({'html':'<span>Enter the required fields</span>'})
+	except Exception as e:
+		return json.dumps({'error':str(e)})
+	finally:
+		cursor.close() 
+		conn.close()
+
 @app.route('/userHome')
 def userHome():
 	if session.get('user'):
@@ -68,7 +108,7 @@ def signUp():
 			#password generation
 			_hashed_password = generate_password_hash(_password)
 			#call the procedure create user 
-			cursor.callproc('sp_createUser',(_name,_email,_password))
+			cursor.callproc('sp_createUser',(_email,_name,_hashed_password))
 			#test to know if the data was well created 
 			data = cursor.fetchall()
 			if len(data) is 0:
@@ -86,25 +126,35 @@ def signUp():
 
 #SignIn procedure
 @app.route('/validateLogin',methods=['POST'])
-def validateLogin():
+def signIn():
+	print("caca2")
 	try:
+		print("caca3")
 		_email = request.form['inputEmail']
 		_password = request.form['inputPassword']
 		
 		con = mysql.connect()
 		cursor = con.cursor()
-		cursor.callproc('sp_connect', _email) #for some weird reason email is not one element but the number of char it is composed of 
+		print("caca1")
+		cursor.callproc('sp_connect', (_email,)) #for some weird reason email is not one element but the number of char it is composed of 
+		print("caca12")
 		data = cursor.fetchall()
-
+		print(data)
+		
 		if len(data) > 0:
-
+			print("caca4")
+			session['user'] = data[0][0]
+			print(data[0][0]) 
 			if check_password_hash(str(data[0][3]),_password):
 				session['user'] = data[0][0]
-				return redirect('/userHome')
+				print(session['user'])
+				return redirect('/showCreatePortfolio')
 			else:
 				return render_template('error.html',error = 'Wrong Email address or Password.')
 		else:
-			return render_template('error.html',error = 'caca')
+			#return render_template('error.html',error = 'caca')
+			print("caca")
+			return render_template('index.html')
 
 	except Exception as e:
 		return render_template('error.html',error = str(e))	
