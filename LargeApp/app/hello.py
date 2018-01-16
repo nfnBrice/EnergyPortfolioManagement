@@ -1,19 +1,58 @@
 #IMPORT FLASK
-from flask import Flask, render_template
+from flask import Flask, render_template, json, request
+from flaskext.mysql import MySQL
+from werkzeug import generate_password_hash, check_password_hash
 app = Flask(__name__)
 
+#data base configuration 
+mysql = MySQL()
+# MySQL configurations
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = ' '
+app.config['MYSQL_DATABASE_DB'] = 'ma_base'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_PORT'] = 3306
+mysql.init_app(app)
 
 #WEBPAGES INITIALISATION 
 #home webpage init
-@app.route('/')
-def home():
-    return render_template('home.html')
-#about webpage init 
-@app.route('/about/')
-def about():
-    return render_template('about.html')
+#@app.route('/')
+#def main():
+#    return render_template('index.html')
 
+#signuo webpage init 
+@app.route('/', methods=['POST','GET'])
+def signUp():
+	#create mysql connection
+	conn = mysql.connect()
+	#create cursor
+	cursor = conn.cursor()
+	try: 
+		# read the posted values from the UI
+		_name = request.form['inputName']
+		_email = request.form['inputEmail']
+		_password = request.form['inputPassword']
+		# validate the received values
+		if _name and _email and _password:
+			#password generation
+			_hashed_password = generate_password_hash(_password)
+			#call the procedure create user 
+			cursor.callproc('sp_createUser',(_name,_email,_hashed_password))
+			#test to know if the data was well created 
+			data = cursor.fetchall()
+			if len(data) is 0:
+				conn.commit()
+				return json.dumps({'message':'User created successfully !'})
+			else:
+				return json.dumps({'error':str(data[0])})
+		else:
+			return json.dumps({'html':'<span>Enter the required fields</span>'})
+	except Exception as e:
+		return json.dumps({'error':str(e)})
+	finally:
+		cursor.close() 
+		conn.close()
 
 #debug mode -> put to false when dev mode is finished
 if __name__ == '__main__':
-    app.run(debug=True)
+	app.run(debug=True)
