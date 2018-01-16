@@ -8,7 +8,7 @@ app = Flask(__name__)
 mysql = MySQL()
 # MySQL configurations
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ' '
+app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
 app.config['MYSQL_DATABASE_DB'] = 'ma_base'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_PORT'] = 3306
@@ -20,8 +20,14 @@ mysql.init_app(app)
 #def main():
 #    return render_template('index.html')
 
+@app.route('/')
+def showSignUp():
+    return render_template('signup.html')
+
+
+
 #signuo webpage init 
-@app.route('/', methods=['POST','GET'])
+@app.route('/signUp', methods=['POST','GET'])
 def signUp():
 	#create mysql connection
 	conn = mysql.connect()
@@ -34,6 +40,7 @@ def signUp():
 		_password = request.form['inputPassword']
 		# validate the received values
 		if _name and _email and _password:
+			print('caca')
 			#password generation
 			_hashed_password = generate_password_hash(_password)
 			#call the procedure create user 
@@ -52,7 +59,8 @@ def signUp():
 	finally:
 		cursor.close() 
 		conn.close()
+		
 
 #debug mode -> put to false when dev mode is finished
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(debug=True, port=5002)
