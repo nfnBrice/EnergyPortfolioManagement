@@ -2,7 +2,12 @@
 from flask import Flask, render_template, json, request
 from flaskext.mysql import MySQL
 from werkzeug import generate_password_hash, check_password_hash
+from flask import session
+from flask import redirect
+import string
 app = Flask(__name__)
+app.secret_key = 'why would I tell you my secret key?'
+
 
 #data base configuration 
 mysql = MySQL()
@@ -18,16 +23,31 @@ mysql.init_app(app)
 
 #WEBPAGES INITIALISATION 
 #home webpage init
-"""@app.route('/')
-def main():
-	return render_template('index.html')"""
-
 @app.route('/')
+def main():
+	return render_template('index.html')
+
+@app.route('/showSignUp')
 def showSignUp():
-    return render_template('signup.html')
+	return render_template('signup.html')
 
+@app.route('/showSignIn')
+def showSignin():
+	return render_template('signin.html')
 
-#signuo webpage init 
+@app.route('/userHome')
+def userHome():
+	if session.get('user'):
+		return render_template('userHome.html')
+	else:
+		return render_template('error.html',error = 'Unauthorized Access')
+
+@app.route('/logout')
+def logout():
+	session.pop('user',None)
+	return redirect('/', code=302)
+
+#signup procedure
 @app.route('/signUp', methods=['POST','GET'])
 def signUp():
 	#create mysql connection
@@ -42,7 +62,7 @@ def signUp():
 		# validate the received values
 		if _name and _email and _password:
 			#password generation
-			#_hashed_password = generate_password_hash(_password)
+			_hashed_password = generate_password_hash(_password)
 			#call the procedure create user 
 			cursor.callproc('sp_createUser',(_name,_email,_password))
 			#test to know if the data was well created 
@@ -59,7 +79,31 @@ def signUp():
 	finally:
 		cursor.close() 
 		conn.close()
+
+#SignIn procedure
+@app.route('/validateLogin',methods=['POST'])
+def validateLogin():
+	try:
+		_email = request.form['inputEmail']
+		_password = request.form['inputPassword']
 		
+		con = mysql.connect()
+		cursor = con.cursor()
+		cursor.callproc('sp_connect', _email) #for some weird reason email is not one element but the number of char it is composed of 
+		data = cursor.fetchall()
+
+		if len(data) > 0:
+
+			if check_password_hash(str(data[0][3]),_password):
+				session['user'] = data[0][0]
+				return redirect('/userHome')
+			else:
+				return render_template('error.html',error = 'Wrong Email address or Password.')
+		else:
+			return render_template('error.html',error = 'caca')
+
+	except Exception as e:
+		return render_template('error.html',error = str(e))	
 
 #debug mode -> put to false when dev mode is finished
 if __name__ == '__main__':
