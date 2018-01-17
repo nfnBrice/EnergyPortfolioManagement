@@ -11,19 +11,20 @@ app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
 app.config['MYSQL_DATABASE_DB'] = 'ma_base'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-app.config['MYSQL_DATABASE_PORT'] = 3306
+app.config['MYSQL_DATABASE_PORT'] = 8889
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://dayenu:secret.word@localhost/dayenu?unix_socket=/usr/local/mysql5/mysqld.sock'
+
 mysql.init_app(app)
 
 #WEBPAGES INITIALISATION 
 #home webpage init
-#@app.route('/')
-#def main():
-#    return render_template('index.html')
+"""@app.route('/')
+def main():
+	return render_template('index.html')"""
 
 @app.route('/')
 def showSignUp():
     return render_template('signup.html')
-
 
 
 #signuo webpage init 
@@ -40,11 +41,10 @@ def signUp():
 		_password = request.form['inputPassword']
 		# validate the received values
 		if _name and _email and _password:
-			print('caca')
 			#password generation
-			_hashed_password = generate_password_hash(_password)
+			#_hashed_password = generate_password_hash(_password)
 			#call the procedure create user 
-			cursor.callproc('sp_createUser',(_name,_email,_hashed_password))
+			cursor.callproc('sp_createUser',(_name,_email,_password))
 			#test to know if the data was well created 
 			data = cursor.fetchall()
 			if len(data) is 0:

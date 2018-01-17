@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS ma_base ;
-CREATE DATABASE IF NOT EXISTS ma_base;
-USE ma_base;
+DROP DATABASE IF EXISTS ma_bases ;
+CREATE DATABASE IF NOT EXISTS ma_bases;
+USE ma_bases;
 
 
 CREATE TABLE Bond(
@@ -62,16 +62,16 @@ BEGIN
      
         ELSE
          
-            insert into tbl_user
+            insert into Users
             (
-                Mail,
                 Pseudo,
+                Mail,
                 Mdp
             )
             values
             (
-                p_mail,
                 p_pseudo,
+                p_mail,
                 p_mdp
             );
         END IF;
