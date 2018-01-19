@@ -1,6 +1,7 @@
-DROP DATABASE IF EXISTS ma_bases ;
-CREATE DATABASE IF NOT EXISTS ma_bases;
-USE ma_bases;
+<<<<<<< HEAD
+DROP DATABASE IF EXISTS ma_base ;
+CREATE DATABASE IF NOT EXISTS ma_base;
+USE ma_base;
 
 
 CREATE TABLE Bond(
@@ -39,7 +40,7 @@ CREATE TABLE Users(
 UserID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 Mail VARCHAR(100),
 Pseudo VARCHAR(100),
-Mdp VARCHAR(10),
+Mdp VARCHAR(250),
 PortfolioID INT,
 FOREIGN KEY (PortfolioID) REFERENCES Portfolio(PortfolioID)
 );
@@ -49,7 +50,7 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_createUser`(
     IN p_mail VARCHAR(100),
     IN p_pseudo VARCHAR(100),
-    IN p_mdp VARCHAR(10)
+    IN p_mdp VARCHAR(250)
 )
 BEGIN
     if ( select exists (select 1 from Users where Pseudo = p_pseudo) ) THEN
@@ -82,10 +83,9 @@ DELIMITER ;
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_connect`
 (
-    IN p_username VARCHAR(100)
+    IN p_mail VARCHAR(250)
 )
 
 BEGIN
-    select * from tbl_user where user_username = p_username;
+    select * from Users where Mail = p_mail;
 END$$
-DELIMITER ;
