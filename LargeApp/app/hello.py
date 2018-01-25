@@ -5,6 +5,8 @@ from werkzeug import generate_password_hash, check_password_hash
 from flask import session
 from flask import redirect
 import string
+import requests
+import optimiz as optimiz
 app = Flask(__name__)
 app.secret_key = 'why would I tell you my secret key?'
 
@@ -64,17 +66,19 @@ def createPortfolio():
 				#find portfolio 
 				cursor.callproc('sp_createPortfolio', (_amount, _horizon, session['user']))
 				data = cursor.fetchall()
+				print("portfolio created");
 
 				if len(data) is 0:
 					conn.commit()
-					return json.dumps({'message':'Portfolio created successfully !'})
+					session['portfolio'] = data[0][0] #IndexError: tuple index out of range
+					return redirect('/addStocks')
 				else:
 					return json.dumps({'error':str(data[0])})
-	
+
 		else:
 			return json.dumps({'html':'<span>Enter the required fields</span>'})
-	except Exception as e:
-		return json.dumps({'error':str(e)})
+	#except Exception as e:
+	#	return json.dumps({'error':str(e)})
 	finally:
 		cursor.close() 
 		conn.close()
@@ -129,25 +133,19 @@ def signUp():
 def signIn():
 	print("caca2")
 	try:
-		print("caca3")
 		_email = request.form['inputEmail']
 		_password = request.form['inputPassword']
 		
 		con = mysql.connect()
 		cursor = con.cursor()
-		print("caca1")
 		cursor.callproc('sp_connect', (_email,)) #for some weird reason email is not one element but the number of char it is composed of 
-		print("caca12")
 		data = cursor.fetchall()
 		print(data)
 		
 		if len(data) > 0:
-			print("caca4")
 			session['user'] = data[0][0]
-			print(data[0][0]) 
 			if check_password_hash(str(data[0][3]),_password):
 				session['user'] = data[0][0]
-				print(session['user'])
 				return redirect('/showCreatePortfolio')
 			else:
 				return render_template('error.html',error = 'Wrong Email address or Password.')
@@ -158,6 +156,34 @@ def signIn():
 
 	except Exception as e:
 		return render_template('error.html',error = str(e))	
+
+@app.route('/showAddStocks')
+def showStocks():
+	#create mysql connection
+	conn = mysql.connect()
+	#create cursor
+	cursor = conn.cursor()
+	cursor.callproc('sp_getAllStocks', ())
+	data = cursor.fetchall()
+	cursor.close() 
+	conn.close()
+	return render_template('addStocks.html', data=stock)
+
+#add Bonds to the portfolio
+@app.route('/addStocks')
+def addStocks():
+	#create mysql connection
+	conn = mysql.connect()
+	#create cursor
+	cursor = conn.cursor()
+	cursor.callproc('sp_getAllStocks', ())
+	data = cursor.fetchall()
+	for each in data:
+		if (request.form['each']):
+			#get portfolio ID 
+			cursor.callproc('sp_linkStockToPortfolio', (session['portfolio'], each['StockID'])) #one portfolio per user for now 
+
+	return render_template('projects.html', data=stock)
 
 #debug mode -> put to false when dev mode is finished
 if __name__ == '__main__':

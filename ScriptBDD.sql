@@ -4,6 +4,8 @@ DROP DATABASE IF EXISTS ma_base ;
 CREATE DATABASE IF NOT EXISTS ma_base;
 USE ma_base;
 
+
+
 # DATABASE SETUP
 
 CREATE TABLE Users(
@@ -53,18 +55,19 @@ CREATE TABLE Bond(
     );
 
 CREATE TABLE Stock(
-    StockID INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
-    Type VARCHAR(1)
+    StockID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    Code VARCHAR(50),
+    Name VARCHAR(100)
     );
 
 CREATE TABLE Project(
-    ProjectID INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
-    Type VARCHAR(1)
+    ProjectID INT NOT NULL PRIMARY KEY AUTO_INCREMENT
     );
 
 CREATE TABLE PortfolioLink(
     PortfolioLinkID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     Quantity INT,
+    Weight INT,
     Type VARCHAR(30),
     PortfolioID INT,
     BondID INT,
@@ -78,11 +81,15 @@ CREATE TABLE PortfolioLink(
 
 CREATE TABLE Pricehistory(
     PriceHistoryID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    Price decimal ,
-    PriceTime DATE ,
-    BondID INT NOT NULL,
-    FOREIGN KEY (BondID) REFERENCES Bond(BondID) 
+    ClosingPrice decimal,
+    HighestPrice decimal,
+    LowestPrice decimal,
+    OpeningPrice decimal,
+    PriceTime DATE,
+    StockID INT,
+    FOREIGN KEY (StockID) REFERENCES Stock(StockID) 
     );
+
 
 
 # STORED PROCEDURES SETUP
@@ -135,45 +142,78 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_connect`
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_createPortfolio`(
     IN p_amount decimal,
-    IN p_horizon decimal,
+    IN p_horizon DATE,
     IN p_userIDs INT(250)
     )
     BEGIN
-             
-                insert into Portfolio
-                (
-                    Amount,
-                    Horizon,
-                    UserID
-                )
-                values
-                (
-                    p_amount,
-                    p_horizon,
-                    p_userIDs
-                );
+        insert into Portfolio
+        (
+            Amount,
+            Horizon,
+            UserID
+        )
+        values
+        (
+            p_amount,
+            p_horizon,
+            p_userIDs
+        );
     END$$
     DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_addBondToPortfolio`(
-    IN p_BondID int,
-    IN p_PortfolioID int,
-    IN p_Quantity INT
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_StockNamebyID`(
+    IN p_StockID INT
     )
-    BEGIN
-             
-        insert into BondPortfolioLink
+    BEGIN     
+        select * from Stock where StockID = StockID;
+    END$$
+    DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getAllStocks`()
+    BEGIN     
+        select * from Stock;
+    END$$
+    DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_linkStockToPortfolio`(
+    IN p_portfolioID INT, 
+    IN p_stockToAddID INT
+    )
+    BEGIN     
+        insert into PortfolioLink
         (
-            BondID,
-            PortfolioID,
-            Quantity
+            StockID,
+            PortfolioID
         )
         values
         (
-            p_BondID,
-            p_PortfolioID,
-            p_Quantity
+            p_stockToAddID,
+            p_PortfolioID
         );
     END$$
     DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getOCHLbyStockID`(
+    IN p_stockID INT
+    )
+    
+    BEGIN     
+         select * from Pricehistory where StockID = p_stockID;
+    END$$
+    DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_updateWeights`(
+    IN p_portfolioID INT,
+    IN p_stockID INT,
+    IN p_weight INT
+    )
+    BEGIN   
+        UPDATE PortfolioLink SET Weight=p_weight WHERE PortfolioID = p_portfolioID AND StockID = p_stockID;
+    END$$
+    DELIMITER ;
+

@@ -27,23 +27,25 @@
       </div>
  
       <div class="jumbotron">
-        <h1>Bucket List App</h1>
-        <form class="form-createPortfolio" action="/createPortfolio" method="post">
-          <label for="inputAmount" class="sr-only">Amount</label>
-          <input type="double" name="inputAmount" id="inputAmount" class="form-control" placeholder="Amount" required autofocus>
-
-          <label for="inputAmount" class="sr-only">Horizon</label>
-          <input type="date" name="inputHorizon" id="inputHorizon" class="form-control" placeholder="Horizon" required autofocus>
-
-          <label for="inputKnowledge" class="sr-only">Do you have knowledge on investments?</label>
-          <input type="radio" name="inputKnowledge" id="option1" value="yes"> yes </input>
-          <input type="radio" name="inputKnowledge" id="option2" value="no"> no </input>
+        <h1>List of Stocks</h1>
+        <form class="form-createPortfolio" action="/addBonds" method="post">
+          {% for stock in data %}
+            <ul class="stock">
+              <li> 
+                {{ stock['Name'] }} 
+              </li>
+              <li> 
+                {{ stock['Code'] }} 
+              </li>
+              <li> 
+                <input type="radio" name="{{stock[StockID']}}" id="stock" value="{{stock['StockID']}}"> </input>
+              </li>
+            </ul>
+          {% endfor %}
         
-        <button id="btnSignIn" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-      </form>
+          <button id="btnSignIn" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        </form>
       </div>
- 
-       
  
       <footer class="footer">
         <p>&copy; Company 2015</p>
