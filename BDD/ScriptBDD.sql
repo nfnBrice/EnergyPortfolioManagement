@@ -72,7 +72,7 @@ CREATE TABLE PortfolioLink(
     PortfolioID INT,
     StockID INT,
     FOREIGN KEY (PortfolioID) REFERENCES Portfolio(PortfolioID),
-    FOREIGN KEY (StockID) REFERENCES Stock(StockID),
+    FOREIGN KEY (StockID) REFERENCES Stock(StockID)
     );
 
 CREATE TABLE Pricehistory(
@@ -85,8 +85,6 @@ CREATE TABLE Pricehistory(
     StockID INT,
     FOREIGN KEY (StockID) REFERENCES Stock(StockID) 
     );
-
-
 
 # STORED PROCEDURES SETUP
 
@@ -175,21 +173,35 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getAllStocks`()
     DELIMITER ;
 
 DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getStocksbyID`()
+    BEGIN     
+        select * from PortfolioLink;
+    END$$
+    DELIMITER ;
+
+DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_linkStockToPortfolio`(
+    IN p_quantity INT,
+    IN p_weight INT,
     IN p_portfolioID INT, 
     IN p_stockToAddID INT
     )
     BEGIN     
         insert into PortfolioLink
         (
+            Quantity,
+            Weight,
             PortfolioID,
             StockID
         )
         values
         (
-            p_PortfolioID,
+            p_quantity,
+            p_weight,
+            p_portfolioID,
             p_stockToAddID
         );
+        SELECT LAST_INSERT_ID();
     END$$
     DELIMITER ;
 

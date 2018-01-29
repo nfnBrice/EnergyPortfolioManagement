@@ -28,20 +28,27 @@
  
       <div class="jumbotron">
         <h1>List of Stocks</h1>
-        <form class="form-createPortfolio" action="/addBonds" method="post">
+        <form class="form-createPortfolio" action="/addStocks" method="post">
+          <table>
+            <tr>
+              <th> Name</th>
+              <th> Code </th>
+              <th> Select </th>
+            </tr>
           {% for stock in data %}
-            <ul class="stock">
-              <li> 
-                {{ stock['Name'] }} 
-              </li>
-              <li> 
-                {{ stock['Code'] }} 
-              </li>
-              <li> 
-                <input type="radio" name="{{stock[StockID']}}" id="stock" value="{{stock['StockID']}}"> </input>
-              </li>
-            </ul>
+            <tr>
+              <td> 
+                {% print(stock[2]) %} 
+              </td>
+              <td> 
+                {% print(stock[1]) %}  
+              </td>
+              <td> 
+                  <input type="radio" name={%print(stock[0])%} id="stock"> </input>
+              </td>
+            </tr>
           {% endfor %}
+        </table>
         
           <button id="btnSignIn" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         </form>

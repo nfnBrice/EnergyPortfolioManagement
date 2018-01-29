@@ -10,7 +10,6 @@ import optimiz as optimiz
 app = Flask(__name__)
 app.secret_key = 'why would I tell you my secret key?'
 
-
 #data base configuration 
 mysql = MySQL()
 # MySQL configurations
@@ -66,14 +65,13 @@ def createPortfolio():
 				#find portfolio 
 				cursor.callproc('sp_createPortfolio', (_amount, _horizon, session['user']))
 				data = cursor.fetchall()
-				print("portfolio created");
-
+				print(data);
 				if len(data) is 0:
-					conn.commit()
-					session['portfolio'] = data[0][0] #IndexError: tuple index out of range
-					return redirect('/addStocks')
-				else:
 					return json.dumps({'error':str(data[0])})
+				else:
+					conn.commit()
+					session['portfolio'] = data[0][0] 
+					return redirect('/showAddStocks')
 
 		else:
 			return json.dumps({'html':'<span>Enter the required fields</span>'})
@@ -131,16 +129,14 @@ def signUp():
 #SignIn procedure
 @app.route('/validateLogin',methods=['POST'])
 def signIn():
-	print("caca2")
 	try:
 		_email = request.form['inputEmail']
 		_password = request.form['inputPassword']
 		
-		con = mysql.connect()
-		cursor = con.cursor()
+		conn = mysql.connect()
+		cursor = conn.cursor()
 		cursor.callproc('sp_connect', (_email,)) #for some weird reason email is not one element but the number of char it is composed of 
 		data = cursor.fetchall()
-		print(data)
 		
 		if len(data) > 0:
 			session['user'] = data[0][0]
@@ -151,39 +147,74 @@ def signIn():
 				return render_template('error.html',error = 'Wrong Email address or Password.')
 		else:
 			#return render_template('error.html',error = 'caca')
-			print("caca")
 			return render_template('index.html')
 
 	except Exception as e:
 		return render_template('error.html',error = str(e))	
 
+	finally:
+		cursor.close() 
+		conn.close()	
+
 @app.route('/showAddStocks')
 def showStocks():
-	#create mysql connection
-	conn = mysql.connect()
-	#create cursor
-	cursor = conn.cursor()
-	cursor.callproc('sp_getAllStocks', ())
-	data = cursor.fetchall()
-	cursor.close() 
-	conn.close()
-	return render_template('addStocks.html', data=stock)
+	try:
+		#create mysql connection
+		conn = mysql.connect()
+		#create cursor
+		cursor = conn.cursor()
+		cursor.callproc('sp_getAllStocks', ())
+		data = cursor.fetchall()
+		return render_template('addStocks.html', data=data)
+	except Exception as e:
+		return render_template('error.html',error = str(e))	
+		
+	finally:
+		cursor.close() 
+		conn.close()
+
+@app.route('/showTest')
+def showTest():
+	try: 
+		#create mysql connection
+		conn = mysql.connect()
+		#create cursor
+		cursor = conn.cursor()
+		cursor.callproc('sp_getStocksbyID', ())
+		data = cursor.fetchall()
+		print(data)
+		return render_template('addStocks.html', data=data)
+
+	except Exception as e:
+		return render_template('error.html',error = str(e))	
+		
+	finally:
+		cursor.close() 
+		conn.close()
 
 #add Bonds to the portfolio
-@app.route('/addStocks')
+@app.route('/addStocks',methods=['POST'])
+
+
 def addStocks():
-	#create mysql connection
 	conn = mysql.connect()
 	#create cursor
 	cursor = conn.cursor()
-	cursor.callproc('sp_getAllStocks', ())
-	data = cursor.fetchall()
-	for each in data:
-		if (request.form['each']):
-			#get portfolio ID 
-			cursor.callproc('sp_linkStockToPortfolio', (session['portfolio'], each['StockID'])) #one portfolio per user for now 
+	try:
+		_a=10;
+		_b=10;
+		f = request.form
+		for key in f.keys():
+			_keyInt=int(key)
+			cursor.callproc('sp_linkStockToPortfolio', (_a,_b,session['portfolio'], _keyInt))
+			caca = cursor.fetchall()
+			print(caca)
+		return redirect('/showTest')
+		
+	finally:
+		cursor.close() 
+		conn.close()
 
-	return render_template('projects.html', data=stock)
 
 #debug mode -> put to false when dev mode is finished
 if __name__ == '__main__':
