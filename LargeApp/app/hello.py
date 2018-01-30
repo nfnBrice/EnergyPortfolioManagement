@@ -65,7 +65,6 @@ def createPortfolio():
 				#find portfolio 
 				cursor.callproc('sp_createPortfolio', (_amount, _horizon, session['user']))
 				data = cursor.fetchall()
-				print(data);
 				if len(data) is 0:
 					return json.dumps({'error':str(data[0])})
 				else:
@@ -182,7 +181,6 @@ def showTest():
 		cursor = conn.cursor()
 		cursor.callproc('sp_getStocksbyID', ())
 		data = cursor.fetchall()
-		print(data)
 		return render_template('addStocks.html', data=data)
 
 	except Exception as e:
@@ -194,21 +192,24 @@ def showTest():
 
 #add Bonds to the portfolio
 @app.route('/addStocks',methods=['POST'])
-
-
 def addStocks():
 	conn = mysql.connect()
 	#create cursor
 	cursor = conn.cursor()
 	try:
-		_a=10;
-		_b=10;
 		f = request.form
+		caca=[ ]
+
 		for key in f.keys():
-			_keyInt=int(key)
-			cursor.callproc('sp_linkStockToPortfolio', (_a,_b,session['portfolio'], _keyInt))
-			caca = cursor.fetchall()
-			print(caca)
+			session['key']=int(key);
+			cursor.callproc('sp_linkStockToPortfolio', (session['portfolio'], session['key']))
+			portfolioLinkAdded = cursor.fetchall()
+			caca.append(portfolioLinkAdded[0][4])
+			conn.commit()
+
+		#print(caca)
+		optimiz.optimiz(caca)
+
 		return redirect('/showTest')
 		
 	finally:

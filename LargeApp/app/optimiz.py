@@ -41,12 +41,27 @@ def get_ochl(stockID):
     :rtype: DataFrame
     """
     #get the data of every stocks added to the portfolio by the user 
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    cursor.callproc('sp_getOCHLbyStockID', (stockID,)) #a coder 
-    portfolioLinkData = cursor.fetchall()
-    cursor.callproc('sp_StockNamebyID', (stockID,)) #a coder 
-    stockData = cursor.fetchall()
+    try: 
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        #print(stockID)
+        cursor.callproc('sp_getOCHLbyStockID', (stockID,)) #a coder 
+        ochlChart = cursor.fetchall()
+        #print("ochlchart")
+        ochlChartList = [ ]
+        for each in ochlChart:
+            #print(each[1])
+            ochlChartList.append(each[1]);
+
+        #print(ochlChartList);
+        cursor.callproc('sp_StockNamebyID', (stockID,)) #a coder 
+        stockName = cursor.fetchall()
+
+        return ochlChartList
+
+    finally:
+        cursor.close() 
+        conn.close()
 
     """  if len(portfolioLinkData) > 0 and stockData > 0:
         ochlChart = pd.DataFrame.from_dict(portfolioLinkData) #source possible de bugg ici est-ce que data est une liste ou pas? 
@@ -96,26 +111,30 @@ def evaluate_portefolio(wei, returns_vec):
     :return: expected return and risk
     :rtype: (float, float)
     """
-    p = np.asmatrix(np.mean(returns_vec, axis=1))
+    means = [ ]
+    r= [ ]
+    for i in range(0,len(returns_vec)): 
+        r.append(returns_vec[i])
+        #returnv=np.array(returns_vec[i])
+        means.append(np.mean(returns_vec[i]))
+
+    p = np.asmatrix(means)
     w = np.asmatrix(wei)
-    c = np.asmatrix(np.cov(returns_vec))
     mu = w * p.T
+    c = np.asmatrix(np.cov(r))
     sigma = np.sqrt(w * c * w.T)
     return mu, sigma
 
-def markowitz_optimization(historical_statuses, evaluate=False):
+def markowitz_optimization(returns_vec, evaluate=False):
     """ Construct efficient Markowitz Portefolio
     :param historical_statuses: 18 days OCHL of at least two stocks
     :param eval: evaluate 1000 random portefolios
     :returns: weights, means, stds, opt_mean, opt_std
     TODO : implement short selling (numeric instability w/ constraints)
     """
-    nb_stocks = len(historical_statuses)
-    lowest_size = np.min([i['close'].size for i in historical_statuses])
-    returns_vec = [returns(singlestock)['close'].tail(lowest_size).values for singlestock in historical_statuses]
-
-
-
+    nb_stocks = len(returns_vec)
+    #print(returns_vec)
+ 
     def optimal_portfolio():
         def con_sum(t):
             # Short ? -> np.sum(np.abs(t))-1
@@ -141,45 +160,38 @@ def markowitz_optimization(historical_statuses, evaluate=False):
             options={'disp': False, 'ftol':1e-16,}
         )
         return res.x
-
-    if evaluate:
-        n_portfolios = 1000
-    else:
-        n_portfolios = 1
     means, stds = np.column_stack([
         evaluate_portefolio(rand_weights(nb_stocks), returns_vec)
-        for _ in range(n_portfolios)
+        for _ in range(1)
     ])
 
-    #weights = opt2(returns_vec).flatten() #imal_portfolio()
     weights = optimal_portfolio()
     opt_mean, opt_std = evaluate_portefolio(weights, returns_vec)
     return weights, means, stds, opt_mean, opt_std
 
-def optimiz(stockID):
+def optimiz(stocks):
     """ optimisation 
-    :param stockID : list of int
+    :param stocks : list of stock id chosen by the user
     :returns: weights, means, stds, opt_mean, opt_std
     TODO : implement short selling (numeric instability w/ constraints)
     """
-    stocks = sorted(stocks)
+    conn = mysql.connect()
+    cursor = conn.cursor()
+
     if len(stocks) < 2 or len(stocks) > 10:
         return {"error": "2 to 10 stocks"}
+    
     else:
-        """max_workers = 4 if sys.version_info[1] < 5 else None
-        executor = ThreadPoolExecutor(max_workers)
-        data = dict(future.result() for future in wait([executor.submit(get_ochl, stockID) for stockID in stocks]).done)
-        data = [data[stockID] for stockID in stocks]
-        errors = [x['error'] for x in data if 'error' in x]
-        if errors:
-        return {"error": "Stocks not found : " + str(errors)}
-        weights, m, s, a, b = markowitz_optimization(data, debug)
-        result = dict()
-        for i, stockID in enumerate(stocks):
-        result[stockID] = weights[i] # faire procedure updatant les weights 
-        conn = mysql.connect()
-        cursor = conn.cursor()
-        cursor.callproc('sp_updateWeights', (stockID,)) #a coder 
-        data = cursor.fetchall()
-        """
+        caca2= [ ]
+        for stockID in stocks:
+            caca2.append(get_ochl(stockID))
+        
+        weights, m, s, a, b = markowitz_optimization(caca2, False)
+        print(weights)
+        i=0;
+        for stockID in stocks:
+            cursor.callproc('sp_updateWeights', (session['portfolio'], stockID ,weights[i].item())) #a coder
+            conn.commit() 
+            print("2")
+            i=i+1
         return render_template('error.html',error = 'portfolio updated')

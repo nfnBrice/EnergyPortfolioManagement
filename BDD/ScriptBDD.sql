@@ -77,10 +77,10 @@ CREATE TABLE PortfolioLink(
 
 CREATE TABLE Pricehistory(
     PriceHistoryID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    ClosingPrice decimal,
-    HighestPrice decimal,
-    LowestPrice decimal,
-    OpeningPrice decimal,
+    ClosingPrice float,
+    HighestPrice float,
+    LowestPrice float,
+    OpeningPrice float,
     PriceTime DATE,
     StockID INT,
     FOREIGN KEY (StockID) REFERENCES Stock(StockID) 
@@ -201,7 +201,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_linkStockToPortfolio`(
             p_portfolioID,
             p_stockToAddID
         );
-        SELECT LAST_INSERT_ID();
+        SELECT * from PortfolioLink where PortfolioLinkID = LAST_INSERT_ID();
     END$$
     DELIMITER ;
 
@@ -219,7 +219,7 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_updateWeights`(
     IN p_portfolioID INT,
     IN p_stockID INT,
-    IN p_weight INT
+    IN p_weight float
     )
     BEGIN   
         UPDATE PortfolioLink SET Weight=p_weight WHERE PortfolioID = p_portfolioID AND StockID = p_stockID;
