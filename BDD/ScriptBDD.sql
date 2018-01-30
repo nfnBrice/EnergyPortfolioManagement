@@ -226,3 +226,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_updateWeights`(
     END$$
     DELIMITER ;
 
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_portfolio`(
+    IN p_portfolioID INT,
+    IN p_stockID INT,
+    IN p_weight float
+    )
+    BEGIN   
+        UPDATE PortfolioLink SET Weight=p_weight WHERE PortfolioID = p_portfolioID AND StockID = p_stockID;
+    END$$
+    DELIMITER ;

@@ -187,11 +187,31 @@ def optimiz(stocks):
             caca2.append(get_ochl(stockID))
         
         weights, m, s, a, b = markowitz_optimization(caca2, False)
-        print(weights)
+
+        j=0
+        y=0
+        l=len(stocks)
+        print("l")
+        print(l)
+        while y<len(stocks) :
+            print(stockID)
+            print("w")
+            print(weights[y].item())
+            if weights[y].item() < 0:
+                print("stocks[y]")
+                print(stocks[y])
+                caca2.remove(get_ochl(stocks[y]))
+                stocks.remove(stocks[y])
+                weights, m, s, a, b = markowitz_optimization(caca2, False)
+                y=-1
+            print("y")
+            print(y)
+            y=y+1
+
+
         i=0;
         for stockID in stocks:
             cursor.callproc('sp_updateWeights', (session['portfolio'], stockID ,weights[i].item())) #a coder
             conn.commit() 
-            print("2")
             i=i+1
         return render_template('error.html',error = 'portfolio updated')
