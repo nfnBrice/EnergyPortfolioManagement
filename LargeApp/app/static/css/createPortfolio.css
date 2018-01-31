@@ -1,0 +1,37 @@
+.jumbotron
+{
+
+  padding-right:  10px;
+  padding-left: 50px;
+	border: 2px solid white;
+  background-color: white;
+	margin: 100px;
+	height: auto;
+	border-radius: 10px;
+	border-color: Gainsboro;
+}
+
+/*#form-control
+{
+	margin: 100px;
+	width: 200px;
+
+
+}*/
+.inputHorizon
+{
+	margin: 100px;
+	width: 400px;
+}
+
+#btnSignIn
+{
+	border: 2px ;
+	padding: 10px;
+	margin-top: 20px;
+	margin-left: 310px;
+	border-radius: 20px;
+	width: 200px;
+	background-color: MidnightBlue;
+
+}

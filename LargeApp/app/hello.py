@@ -34,6 +34,10 @@ def showSignUp():
 @app.route('/showSignIn')
 def showSignin():
 	return render_template('signin.html')
+	
+@app.route("/projects")
+def project():
+    return render_template('projects.html')	
 
 @app.route('/userHome')
 def userHome():
