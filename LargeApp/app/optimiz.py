@@ -191,21 +191,16 @@ def optimiz(stocks):
         j=0
         y=0
         l=len(stocks)
-        print("l")
-        print(l)
+
         while y<len(stocks) :
-            print(stockID)
-            print("w")
-            print(weights[y].item())
+
             if weights[y].item() < 0:
-                print("stocks[y]")
-                print(stocks[y])
+
                 caca2.remove(get_ochl(stocks[y]))
                 stocks.remove(stocks[y])
                 weights, m, s, a, b = markowitz_optimization(caca2, False)
                 y=-1
-            print("y")
-            print(y)
+
             y=y+1
 
 

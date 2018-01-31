@@ -7,6 +7,7 @@ from flask import redirect
 import string
 import requests
 import optimiz as optimiz
+import pandas as pd
 app = Flask(__name__)
 app.secret_key = 'why would I tell you my secret key?'
 
@@ -172,20 +173,37 @@ def showStocks():
 		cursor.close() 
 		conn.close()
 
-@app.route('/showTest')
-def showTest():
+@app.route('/showPortfolio')
+def showPortfolio():
 	try: 
 		#create mysql connection
 		conn = mysql.connect()
 		#create cursor
 		cursor = conn.cursor()
-		cursor.callproc('sp_getStocksbyID', ())
-		data = cursor.fetchall()
-		return render_template('addStocks.html', data=data)
 
-	except Exception as e:
-		return render_template('error.html',error = str(e))	
-		
+		amountList=[ ]
+		stocksOfCurrentPortfolio = [ ]
+		cursor.callproc('sp_getLinkDataFromPortfolioID',(session['portfolio'],))
+		data = cursor.fetchall()
+		i=0
+		for each in data:
+			amountList.append(each[2])
+			cursor.callproc('sp_getStockInfoFromLinkID',(each[4],))
+			CurrentStocks = cursor.fetchall()
+			#CurrentStocksdf = pd.DataFrame(CurrentStocks[0])
+			stocksOfCurrentPortfolio.append(CurrentStocks[0])
+			#stocksOfCurrentPortfolio[0].remove(stocksOfCurrentPortfolio[i][0])
+			i=i+1
+		df = pd.DataFrame(stocksOfCurrentPortfolio)
+		df['amount'] = amountList
+		df.rename(
+            columns={0: 'id', 1: 'code', 2: 'name', 'amount': 'weight'},
+            inplace=True
+        )
+		del df['id']
+		return render_template('portfolio.html', data=df.to_html())
+	#except Exception as e:
+	# 	return render_template('error.html',error = str(e))	
 	finally:
 		cursor.close() 
 		conn.close()
@@ -197,20 +215,24 @@ def addStocks():
 	#create cursor
 	cursor = conn.cursor()
 	try:
-		f = request.form
-		caca=[ ]
+		cursor.callproc('sp_getLinkDataFromPortfolioID', (session['portfolio'],))
+		isThereLinksInPortfolio = cursor.fetchall()
 
-		for key in f.keys():
-			session['key']=int(key);
-			cursor.callproc('sp_linkStockToPortfolio', (session['portfolio'], session['key']))
-			portfolioLinkAdded = cursor.fetchall()
-			caca.append(portfolioLinkAdded[0][4])
-			conn.commit()
+		#if isThereLinksInPortfolio means the portfolio is full -> ask user to modify it or create a new one. 
+		if(not isThereLinksInPortfolio):
+			f = request.form
+			caca=[ ]
 
-		#print(caca)
-		optimiz.optimiz(caca)
+			for key in f.keys():
+				session['key']=int(key);
+				cursor.callproc('sp_linkStockToPortfolio', (session['portfolio'], session['key']))
+				portfolioLinkAdded = cursor.fetchall()
+				caca.append(portfolioLinkAdded[0][4])
+				conn.commit()
 
-		return redirect('/showTest')
+			#print(caca)
+			optimiz.optimiz(caca)
+		return redirect('/showPortfolio')
 		
 	finally:
 		cursor.close() 
