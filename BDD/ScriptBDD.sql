@@ -226,8 +226,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_updateWeights`(
     END$$
     DELIMITER ;
 
-<<<<<<< HEAD
-=======
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getLinkDataFromPortfolioID`(
     IN p_portfolioID INT
@@ -246,4 +244,3 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getStockInfoFromLinkID`(
     END$$
     DELIMITER ;
 
->>>>>>> a7987be0e8d08ce4d501c0aa1959bfb800507b11
