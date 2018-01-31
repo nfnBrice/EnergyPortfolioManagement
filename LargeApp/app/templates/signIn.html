@@ -1,21 +1,11 @@
-<<<<<<< HEAD
 {% extends "index.html" %}
 {% block h %}{% endblock %}
 {% block body %}
-
 <head>
 	<title>Login</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-=======
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Login</title>
- 
-    
->>>>>>> a7987be0e8d08ce4d501c0aa1959bfb800507b11
-<!--===============================================================================================-->
+<!--===============================================================================================-->	
 	<link rel="icon" type="image/png" href="static/Login_v18/images/icons/favicon.ico"/>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="static/Login_v18/vendor/bootstrap/css/bootstrap.min.css">
@@ -25,81 +15,48 @@
 	<link rel="stylesheet" type="text/css" href="static/Login_v18/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="static/Login_v18/vendor/animate/animate.css">
-<!--===============================================================================================-->
+<!--===============================================================================================-->	
 	<link rel="stylesheet" type="text/css" href="static/Login_v18/vendor/css-hamburgers/hamburgers.min.css">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="static/Login_v18/vendor/animsition/css/animsition.min.css">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="static/Login_v18/vendor/select2/select2.min.css">
-<!--===============================================================================================-->
+<!--===============================================================================================-->	
 	<link rel="stylesheet" type="text/css" href="static/Login_v18/vendor/daterangepicker/daterangepicker.css">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="static/Login_v18/css/util.css">
 	<link rel="stylesheet" type="text/css" href="static/Login_v18/css/main.css">
-<<<<<<< HEAD
 <!--===============================================================================================-->
 </head>
-=======
-
-    <script type="text/javascript" src="../static/js/jQuery.js"></script>
-    <script type="text/javascript" src="../static/js/signUp.js"></script>
-    
-  </head>
- 
-  <body>
- 
->>>>>>> a7987be0e8d08ce4d501c0aa1959bfb800507b11
 <body style="background-color: #666666;">
-
+	
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">
-<<<<<<< HEAD
-				<form action="/signUp" class="login100-form validate-form">
-					<span class="login100-form-title p-b-43">
-						<h3>Join us </h3>
-					</span>
-					<div class="wrap-input100 validate-input" data-validate = "Name is required">
-						<input class="input100" type="text" name="name">
-						<span class="focus-input100"></span>
-						<span class="label-input100">Name</span>
-					</div>
+				<form class="login100-form validate-form" action = "/validateLogin" method ="post">
 
-					<div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
-						<input class="input100" type="text" name="email">
-						<span class="focus-input100"></span>
-						<span class="label-input100">Email</span>
-					</div>
+				    <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
+				        <span class="focus-input100"></span>
+				        <label for="inputEmail" class="label-input100">Email address</label>
+				        <input type="email" name="inputEmail" class="input100"  required autofocus>
 
+				    </div>
+				    <div class="wrap-input100 validate-input" data-validate="Password is required">
+				        <span class="focus-input100"></span>
+				        <label for="inputPassword" class="label-input100">Password</label>
+				        <input type="password" name="inputPassword" class="input100"  required autofocus>
 
-					<div class="wrap-input100 validate-input" data-validate="Password is required">
-						<input class="input100" type="password" name="pass">
-						<span class="focus-input100"></span>
-						<span  class="label-input100">Password</span>
-					</div>
-
-					<div class="flex-sb-m w-full p-t-3 p-b-32">
-						<div class="contact100-form-checkbox">
-							<input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
-							<label class="label-checkbox100" for="ckb1">
-								Invest with EPM
-							</label>
-						</div>
-					</div>
-
-
-					<div class="container-login100-form-btn">
-						<button class="login100-form-btn">Sign Up </button>
-					</div>
-				</form>
+				    </div>     
+				    <button id="btnSignIn" class="login100-form-btn" type="submit">Sign up</button>
+		      	</form>
 
 				<div class="login100-more" style="background-image: url('static/Login_v18/images/bg-01.jpg');">
 				</div>
 			</div>
 		</div>
 	</div>
-
-
+	
+	
 <!--===============================================================================================-->
 	<script src="static/Login_v18/vendor/jquery/jquery-3.2.1.min.js"></script>
 <!--===============================================================================================-->
@@ -119,41 +76,3 @@
 
 </body>
 {% endblock %}
-=======
-
-		      <div class="login100-form validate-form">
-		        <span class="login100-form-title p-b-43">
-					<h3>Join us </h3>
-				</span>
-
-		        <form class="form-signin">
-			        <div class="wrap-input100 validate-input" data-validate = "Name is required">
-				        <span class="focus-input100"></span>
-				        <label for="inputName" class="label-input100">Name</label>
-				        <input type="name" name="inputName" class="input100"  required autofocus>
-				    </div>
-				    <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
-				        <span class="focus-input100"></span>
-				        <label for="inputEmail" class="label-input100">Email address</label>
-				        <input type="email" name="inputEmail" class="input100"  required autofocus>
-				    </div>
-				    <div class="wrap-input100 validate-input" data-validate="Password is required">
-				        <span class="focus-input100"></span>
-				        <label for="inputPassword" class="label-input100">Password</label>
-				        <input type="password" name="inputPassword" class="input100"  required autofocus>
-				    </div>     
-				    <button id="btnSignUp" class="login100-form-btn" type="button">Sign up</button>
-		      	</form>
-
-		      </div>
- 
-       
- 
-      <footer class="footer">
-        <p>&copy; Company 2015</p>
-      </footer>
- 
-    </div>
-  </body>
-</html>
->>>>>>> a7987be0e8d08ce4d501c0aa1959bfb800507b11

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .jumbotron
 {
 
@@ -36,3 +37,43 @@ h1
 	font-family: "Times New Roman", serif;
 
 }
+=======
+.jumbotron
+{
+
+  padding-right:  10px;
+  padding-left: 50px;
+	border: 1px solid white;
+  background-color: white;
+	margin: 100px;
+	height: auto;
+	border-radius: 100px;
+	border-color: Gainsboro;
+
+
+}
+
+#btnSignIn
+{
+	border: 2px ;
+	padding: 10px;
+	margin-top: 20px;
+	margin-left: 310px;
+	border-radius: 20px;
+	width: 200px;
+	background-color: MidnightBlue;
+
+}
+h1, th
+{
+	border:1px;
+	padding: 30px;
+	text-align: center;
+}
+
+h1
+{
+	font-family: "Times New Roman", serif;
+
+}
+>>>>>>> a7987be0e8d08ce4d501c0aa1959bfb800507b11
