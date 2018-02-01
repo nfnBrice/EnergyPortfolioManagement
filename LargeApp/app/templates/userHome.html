@@ -1,22 +1,66 @@
 {% extends "index.html" %}
-{% block h %} {% endblock %} 
-{% block footer %} {% endblock %} 
+{% block h %}{% endblock %}
+{% block body %}
+  <head>
+    <title>Add Stocks</title>
 
-{% block body %}  
- 
-    <div class="container">
-        <div class="header">
-            <nav>
-                <ul class="nav nav-pills pull-right">
-                    <li role="presentation" class="active"><a href="/logout">Logout</a>
-                    </li>
-                </ul>
-            </nav>
-            <h3 class="text-muted"> </h3>
-        </div>
+
+    <!--<link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet"> -->
+    <script src="../static/js/jquery-1.11.2.js"></script>
+    <script src="../static/js/Portfolio.js"></script>
+    <link href="/static/css/addStocks.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+    <section div="sectionaddsto">
+
+      <div class="container">
 
         <div class="jumbotron">
-            <h1>Welcome !!</h1>
+          <h1>List of Portfolios</h1>
+          <table>
+            <tr>
+              <th> Name</th>
+              <th> Amount </th>
+              <th> Horizon </th>
+              <th> Risk repartition </th>
+              <th> Delete </th>
+              <th> Update </th>
+            </tr>
+            {% for portfolio in data %}
+              <tr>
+                <td>
+                  {% print(portfolio[4]) %}
+                </td>
+                <td>
+                  {% print(portfolio[1]) %}
+                </td>
+                <td>
+                  {% print(portfolio[2]) %}
+                </td>
+                <td>
+                  {% print(portfolio[5]) %}
+                </td>
+                <td>
+                  <form class="form-createPortfolio" action="/deletePortfolio" method="post">
+                    <input ntype=hidden value="{{ portfolio[0] }}" name="inputPortfolioToDelete"></input>
+                    <button id="btnDelete" class="btn btn-lg btn-primary btn-block" type="submit"> Delete </button>
+                  </form>
+                </td>
+                <td>
+                  <input type = "button" onclick = "updatePortfolio(stock[0])" value ="Update"/>
+                  
+                </td>
+
+              </tr>
+            {% endfor %}
+          </table>
         </div>
-    </div>
-	{% endblock %} 
+      </div>
+
+    </section>
+  </body>
+{% endblock %}

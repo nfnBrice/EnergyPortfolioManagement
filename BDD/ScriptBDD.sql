@@ -21,6 +21,8 @@ CREATE TABLE Portfolio(
     Amount decimal DEFAULT 0,
     Horizon DATE DEFAULT 0,
     UserID INT, 
+    Name VARCHAR,
+    Risk float,
     FOREIGN KEY (UserID) REFERENCES Users (UserID)
     );
 
@@ -244,3 +246,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getStockInfoFromLinkID`(
     END$$
     DELIMITER ;
 
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getPortfoliosPerUser`(
+    IN p_userID INT
+    )
+    BEGIN   
+        select * from Portfolio where UserID = p_userID;
+    END$$
+    DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_deletePortfolio`(
+    IN p_portfolioID INT
+    )
+    BEGIN   
+        DELETE * from PortfolioLink where PortfolioID = p_portfolioID;
+        DELETE from Portfolio where PortfolioID = p_portfolioID;
+    END$$
+    DELIMITER ;

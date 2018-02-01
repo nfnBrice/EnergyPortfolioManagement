@@ -82,11 +82,40 @@ def createPortfolio():
 		conn.close()
 
 @app.route('/userHome')
-def userHome():
+def UserHome():
 	if session.get('user'):
-		return render_template('userHome.html')
+		try: 
+			#create mysql connection
+			conn = mysql.connect()
+			#create cursor
+			cursor = conn.cursor()
+			cursor.callproc('sp_getPortfoliosPerUser',(session['user'],))
+			data = cursor.fetchall()
+			return render_template('userHome.html',data=data)
+		finally:
+			cursor.close() 
+			conn.close()
 	else:
 		return render_template('error.html',error = 'Unauthorized Access')
+
+@app.route('/deletePortfolio', methods=['POST','GET'])
+def deletePortfolio():
+		try: 
+			print("1")
+			#create mysql connection
+			conn = mysql.connect()
+			cursor = conn.cursor()
+			_portfolioToDelete = request.form['inputPortfolioToDelete']
+			#create cursor
+			_int_portfolioToDelete= int(_portfolioToDelete)
+			print(_int_portfolioToDelete)
+			cursor.callproc('sp_deletePortfolio',(_int_portfolioToDelete,)) 
+			conn.commit()
+			return redirect('/userHome')
+		finally:
+			cursor.close() 
+			conn.close()
+
 
 @app.route('/logout')
 def logout():
@@ -132,17 +161,16 @@ def signIn():
 	try:
 		_email = request.form['inputEmail']
 		_password = request.form['inputPassword']
-		
 		conn = mysql.connect()
 		cursor = conn.cursor()
 		cursor.callproc('sp_connect', (_email,)) #for some weird reason email is not one element but the number of char it is composed of 
 		data = cursor.fetchall()
-		
+
 		if len(data) > 0:
 			session['user'] = data[0][0]
 			if check_password_hash(str(data[0][3]),_password):
 				session['user'] = data[0][0]
-				return redirect('/showCreatePortfolio')
+				return redirect('/userHome')
 			else:
 				return render_template('error.html',error = 'Wrong Email address or Password.')
 		else:
