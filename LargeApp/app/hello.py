@@ -47,15 +47,17 @@ def showCreatePortfolio():
 
 #page de tutoriel à faire avant cette page la 
 @app.route('/createPortfolio', methods=['POST','GET'])
-def createPortfolio():
+def addPortfolio():
 	#create mysql connection
 	conn = mysql.connect()
 	#create cursor
 	cursor = conn.cursor()
 	try: 
 		# read the posted values from the UI
+		_name = request.form['inputName']
 		_amount = request.form['inputAmount']
 		_horizon = request.form['inputHorizon']
+		_risk = request.form['inputRisk']
 		_knowledge = request.form['inputKnowledge']
 
 		# validate the received values
@@ -64,7 +66,7 @@ def createPortfolio():
 				return render_template('tutorial.html')
 			else :
 				#find portfolio 
-				cursor.callproc('sp_createPortfolio', (_amount, _horizon, session['user']))
+				cursor.callproc('sp_createPortfolio', (_amount, _horizon, session['user'],_name,_risk))
 				data = cursor.fetchall()
 				if len(data) is 0:
 					return json.dumps({'error':str(data[0])})
@@ -72,7 +74,6 @@ def createPortfolio():
 					conn.commit()
 					session['portfolio'] = data[0][0] 
 					return redirect('/showAddStocks')
-
 		else:
 			return json.dumps({'html':'<span>Enter the required fields</span>'})
 	#except Exception as e:
@@ -101,7 +102,6 @@ def UserHome():
 @app.route('/deletePortfolio', methods=['POST','GET'])
 def deletePortfolio():
 		try: 
-			print("1")
 			#create mysql connection
 			conn = mysql.connect()
 			cursor = conn.cursor()
@@ -116,6 +116,53 @@ def deletePortfolio():
 			cursor.close() 
 			conn.close()
 
+@app.route('/showUpdatePortfolio', methods=['POST','GET'])
+def showUpdatePortfolio():
+	#	try: 
+	#		conn = mysql.connect()
+	#		cursor = conn.cursor()
+	#		_portfolioToUpdate = request.form['inputPortfolioToUpdate']
+	#		session['portfolio']=int(_portfolioToUpdate)
+	#		cursor.callproc('sp_getPortfolioFromPortfolioID',(session['portfolio']))
+	#		data = cursor.fetchall()
+
+	#		return render_template('updatePortfolio.html', data=)
+	#try:
+	conn = mysql.connect()
+	cursor = conn.cursor()
+	stocks = [ ]
+	cursor.callproc('sp_getLinkDataFromPortfolioID',(session['portfolio'],))
+	data = cursor.fetchall()
+	i=0
+
+	for each in data:
+		CurrentStock = [ ]
+		cursor.callproc('sp_getStockInfoFromLinkID',(each[4],))
+		CurrentStocks = cursor.fetchall()
+		CurrentStock.append(each[2])
+		CurrentStock.append(CurrentStocks[0][2])
+		CurrentStock.append(CurrentStocks[0][1])
+		stocks.append(CurrentStock)
+	cursor.callproc('sp_getPortfolioFromPortfolioID',(session['portfolio'],))
+	portfolio = cursor.fetchall()
+	return render_template('updatePortfolio.html', portfolioName=portfolio[0][4], portfolioAmount=portfolio[0][1], portfolioRisk=portfolio[0][5], stocks=stocks)
+	#finally:
+	cursor.close() 
+	conn.close()
+
+"""@app.route('/updatePortfolio', methods=['POST','GET'])
+def updatePortfolio():
+		try: 
+			#create mysql connection
+			conn = mysql.connect()
+			cursor = conn.cursor()
+			_portfolioToUpdate = request.form['inputPortfolioToUpdate']
+			#create cursor
+			session['portfolio']=int(_portfolioToUpdate)
+			return redirect('/updatePortfolio')
+		finally:
+			cursor.close() 
+			conn.close()"""
 
 @app.route('/logout')
 def logout():
@@ -201,40 +248,31 @@ def showStocks():
 		cursor.close() 
 		conn.close()
 
-@app.route('/showPortfolio')
+@app.route('/showPortfolio',methods=['POST','GET'])
 def showPortfolio():
-	try: 
-		#create mysql connection
-		conn = mysql.connect()
-		#create cursor
-		cursor = conn.cursor()
 
-		amountList=[ ]
-		stocksOfCurrentPortfolio = [ ]
-		cursor.callproc('sp_getLinkDataFromPortfolioID',(session['portfolio'],))
-		data = cursor.fetchall()
-		i=0
-		for each in data:
-			amountList.append(each[2])
-			cursor.callproc('sp_getStockInfoFromLinkID',(each[4],))
-			CurrentStocks = cursor.fetchall()
-			#CurrentStocksdf = pd.DataFrame(CurrentStocks[0])
-			stocksOfCurrentPortfolio.append(CurrentStocks[0])
-			#stocksOfCurrentPortfolio[0].remove(stocksOfCurrentPortfolio[i][0])
-			i=i+1
-		df = pd.DataFrame(stocksOfCurrentPortfolio)
-		df['amount'] = amountList
-		df.rename(
-            columns={0: 'id', 1: 'code', 2: 'name', 'amount': 'weight'},
-            inplace=True
-        )
-		del df['id']
-		return render_template('portfolio.html', data=df.to_html())
-	#except Exception as e:
-	# 	return render_template('error.html',error = str(e))	
-	finally:
-		cursor.close() 
-		conn.close()
+	#try:
+	conn = mysql.connect()
+	cursor = conn.cursor()
+	stocks = [ ]
+	cursor.callproc('sp_getLinkDataFromPortfolioID',(session['portfolio'],))
+	data = cursor.fetchall()
+	i=0
+
+	for each in data:
+		CurrentStock = [ ]
+		cursor.callproc('sp_getStockInfoFromLinkID',(each[4],))
+		CurrentStocks = cursor.fetchall()
+		CurrentStock.append(each[2])
+		CurrentStock.append(CurrentStocks[0][2])
+		CurrentStock.append(CurrentStocks[0][1])
+		stocks.append(CurrentStock)
+	cursor.callproc('sp_getPortfolioFromPortfolioID',(session['portfolio'],))
+	portfolio = cursor.fetchall()
+	return render_template('portfolio.html', portfolioName=portfolio[0][4], portfolioAmount=portfolio[0][1], portfolioRisk=portfolio[0][5], stocks=stocks)
+	#finally:
+	cursor.close() 
+	conn.close()
 
 #add Bonds to the portfolio
 @app.route('/addStocks',methods=['POST'])
@@ -242,13 +280,18 @@ def addStocks():
 	conn = mysql.connect()
 	#create cursor
 	cursor = conn.cursor()
+	print(session['portfolio'])
 	try:
 		cursor.callproc('sp_getLinkDataFromPortfolioID', (session['portfolio'],))
 		isThereLinksInPortfolio = cursor.fetchall()
+		f = request.form
+		print(isThereLinksInPortfolio)
+
 
 		#if isThereLinksInPortfolio means the portfolio is full -> ask user to modify it or create a new one. 
-		if(not isThereLinksInPortfolio):
-			f = request.form
+		if(isThereLinksInPortfolio):
+			return redirect('/showPortfolio')
+		else:
 			caca=[ ]
 
 			for key in f.keys():
@@ -257,10 +300,8 @@ def addStocks():
 				portfolioLinkAdded = cursor.fetchall()
 				caca.append(portfolioLinkAdded[0][4])
 				conn.commit()
-
-			#print(caca)
 			optimiz.optimiz(caca)
-		return redirect('/showPortfolio')
+			return redirect('/showPortfolio')
 		
 	finally:
 		cursor.close() 

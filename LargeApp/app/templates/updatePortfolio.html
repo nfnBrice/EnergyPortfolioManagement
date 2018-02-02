@@ -26,37 +26,65 @@
         <h3 class="text-muted">Python Flask App</h3>
       </div>
  
-           <div class="jumbotron">
+      <div class="jumbotron">
         
         <table>
           <tr>
             <th>
-              Name
+              Field
             </th>
             <th>
-              Risk
+              old value
             </th>
             <th>
-              Amount
-            </th>
-            <th>
-              Stocks
+              new value
             </th>
           </tr>
           <tr>
             <td>
+              Portfolio Name
+            </td>
+            <td>
               {% print(portfolioName) %}
             </td>
+            <td>
+              <form class="form-newname" action="/updateName" method="post">
+                <input type="text" name="newName" id="newName"> </input>
+                <button id="newName" class="btn btn-lg btn-primary btn-block" type="submit"> Modifier </button>
+              </form>
+            </td>
+          </tr>
+          <tr>
+            <td>Portfolio Risk</td>
             <td>
               {% print(portfolioRisk) %}
             </td>
             <td>
+              <form class="form-newrisk" action="/updateRisk" method="post">
+                <input type="text" name="newRisk" id="newRisk"> </input>
+                <button id="newRisk" class="btn btn-lg btn-primary btn-block" type="submit"> Modifier </button>
+              </form>
+            </td>
+          </tr>
+          <tr>
+            <td>Portfolio Amount</td>
+            <td>
+              old value
               {% print(portfolioAmount) %}
             </td>
             <td>
+              <form class="form-newamount" action="/updateAmount" method="post">
+                <input type="text" name="newAmount" id="newAmount"> </input>
+                <button id="newAmount" class="btn btn-lg btn-primary btn-block" type="submit"> Modifier </button>
+              </form>
+            </td>
+          </tr>
+          <tr>
+            <td>Stocks</td>
+            <td>
                 <table>
                   <tr>
-                    <th> Stock Name</th>
+                    <th> Name</th>
                     <th> Code </th>
                     <th> Weight </th>
                   </tr>
@@ -75,8 +103,14 @@
                 {% endfor %}
               </table>
             </td>
+            <td>
+              <form class="form-newstocks" action="/changeStocks" method="post">
+                <button id="newStocks" class="btn btn-lg btn-primary btn-block" type="submit"> Modifier </button>
+              </form>
+            </td>
           </tr>
-        </table>
+
+
       </div>
  
       <footer class="footer">

@@ -33,7 +33,10 @@
             {% for portfolio in data %}
               <tr>
                 <td>
-                  {% print(portfolio[4]) %}
+                  <form class="form-showPortfolio" action="/showPortfolio" method="post">
+                    <input type=hidden value="{{ portfolio[0] }}" name="inputPortfolioToShow"></input>
+                    <button id="btnShow" class="btn btn-lg btn-primary btn-block" type="submit"> {% print(portfolio[4]) %} </button>
+                  </form>
                 </td>
                 <td>
                   {% print(portfolio[1]) %}
@@ -45,19 +48,21 @@
                   {% print(portfolio[5]) %}
                 </td>
                 <td>
-                  <form class="form-createPortfolio" action="/deletePortfolio" method="post">
-                    <input ntype=hidden value="{{ portfolio[0] }}" name="inputPortfolioToDelete"></input>
+                  <form class="form-deleteportfolio" action="/deletePortfolio" method="post">
+                    <input type=hidden value="{{ portfolio[0] }}" name="inputPortfolioToDelete"></input>
                     <button id="btnDelete" class="btn btn-lg btn-primary btn-block" type="submit"> Delete </button>
                   </form>
                 </td>
                 <td>
-                  <input type = "button" onclick = "updatePortfolio(stock[0])" value ="Update"/>
-                  
+                  <form class="form-updatePortfolio" action="/showUpdatePortfolio" method="post">
+                    <input type=hidden value="{{ portfolio[0] }}" name="inputPortfolioToUpdate"></input>
+                    <button id="btUpdate" class="btn btn-lg btn-primary btn-block" type="submit"> Update </button>
+                  </form>
                 </td>
-
               </tr>
             {% endfor %}
           </table>
+            <a class="btn btn-lg btn-primary btn-block" href="/showCreatePortfolio">Create</a>
         </div>
       </div>
 

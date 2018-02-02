@@ -123,6 +123,7 @@ def evaluate_portefolio(wei, returns_vec):
     mu = w * p.T
     c = np.asmatrix(np.cov(r))
     sigma = np.sqrt(w * c * w.T)
+    print(mu)
     return mu, sigma
 
 def markowitz_optimization(returns_vec, evaluate=False):

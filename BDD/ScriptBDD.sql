@@ -21,7 +21,7 @@ CREATE TABLE Portfolio(
     Amount decimal DEFAULT 0,
     Horizon DATE DEFAULT 0,
     UserID INT, 
-    Name VARCHAR,
+    Name VARCHAR(50),
     Risk float,
     FOREIGN KEY (UserID) REFERENCES Users (UserID)
     );
@@ -140,19 +140,25 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_createPortfolio`(
     IN p_amount decimal,
     IN p_horizon DATE,
     IN p_userIDs INT(250)
+    IN p_name VARCHAR(50)
+    IN p_risk INT(100)
     )
     BEGIN
         insert into Portfolio
         (
             Amount,
             Horizon,
-            UserID
+            UserID,
+            Name,
+            Risk
         )
         values
         (
             p_amount,
             p_horizon,
-            p_userIDs
+            p_userIDs,
+            p_name,
+            p_risk
         );
         SELECT LAST_INSERT_ID();
     END$$
@@ -255,6 +261,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getPortfoliosPerUser`(
     END$$
     DELIMITER ;
 
+
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_deletePortfolio`(
     IN p_portfolioID INT
@@ -262,5 +269,15 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_deletePortfolio`(
     BEGIN   
         DELETE * from PortfolioLink where PortfolioID = p_portfolioID;
         DELETE from Portfolio where PortfolioID = p_portfolioID;
+    END$$
+    DELIMITER ;
+
+# TO ADD TO DATABASE
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getPortfolioFromPortfolioID`(
+    IN p_portfolioID INT
+    )
+    BEGIN   
+        select * from Portfolio where PortfolioID = p_portfolioID;
     END$$
     DELIMITER ;
