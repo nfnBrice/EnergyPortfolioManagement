@@ -41,6 +41,10 @@ def showAbout():
 def showSignin():
 	return render_template('signin.html')
 
+@app.route('/showUserHome')
+def showUserHome():
+	return render_template('signIn.html')
+
 @app.route("/projects")
 def project():
     return render_template('projects.html')
@@ -69,13 +73,8 @@ def addPortfolio():
 			if _knowledge is 0:
 				return render_template('tutorial.html')
 			else :
-<<<<<<< HEAD
 				#find portfolio
-				cursor.callproc('sp_createPortfolio', (_amount, _horizon, session['user']))
-=======
-				#find portfolio 
 				cursor.callproc('sp_createPortfolio', (_amount, _horizon, session['user'],_name,_risk))
->>>>>>> 4b27246c29576a88adcf4fa4a51687857b591a68
 				data = cursor.fetchall()
 				if len(data) is 0:
 					return json.dumps({'error':str(data[0])})
@@ -94,7 +93,7 @@ def addPortfolio():
 @app.route('/userHome')
 def UserHome():
 	if session.get('user'):
-		try: 
+		try:
 			#create mysql connection
 			conn = mysql.connect()
 			#create cursor
@@ -103,14 +102,14 @@ def UserHome():
 			data = cursor.fetchall()
 			return render_template('userHome.html',data=data)
 		finally:
-			cursor.close() 
+			cursor.close()
 			conn.close()
 	else:
 		return render_template('error.html',error = 'Unauthorized Access')
 
 @app.route('/deletePortfolio', methods=['POST','GET'])
 def deletePortfolio():
-		try: 
+		try:
 			#create mysql connection
 			conn = mysql.connect()
 			cursor = conn.cursor()
@@ -118,16 +117,16 @@ def deletePortfolio():
 			#create cursor
 			_int_portfolioToDelete= int(_portfolioToDelete)
 			print(_int_portfolioToDelete)
-			cursor.callproc('sp_deletePortfolio',(_int_portfolioToDelete,)) 
+			cursor.callproc('sp_deletePortfolio',(_int_portfolioToDelete,))
 			conn.commit()
 			return redirect('/userHome')
 		finally:
-			cursor.close() 
+			cursor.close()
 			conn.close()
 
 @app.route('/showUpdatePortfolio', methods=['POST','GET'])
 def showUpdatePortfolio():
-	#	try: 
+	#	try:
 	#		conn = mysql.connect()
 	#		cursor = conn.cursor()
 	#		_portfolioToUpdate = request.form['inputPortfolioToUpdate']
@@ -156,12 +155,12 @@ def showUpdatePortfolio():
 	portfolio = cursor.fetchall()
 	return render_template('updatePortfolio.html', portfolioName=portfolio[0][4], portfolioAmount=portfolio[0][1], portfolioRisk=portfolio[0][5], stocks=stocks)
 	#finally:
-	cursor.close() 
+	cursor.close()
 	conn.close()
 
 """@app.route('/updatePortfolio', methods=['POST','GET'])
 def updatePortfolio():
-		try: 
+		try:
 			#create mysql connection
 			conn = mysql.connect()
 			cursor = conn.cursor()
@@ -170,7 +169,7 @@ def updatePortfolio():
 			session['portfolio']=int(_portfolioToUpdate)
 			return redirect('/updatePortfolio')
 		finally:
-			cursor.close() 
+			cursor.close()
 			conn.close()"""
 
 @app.route('/logout')
@@ -217,10 +216,6 @@ def signIn():
 	try:
 		_email = request.form['inputEmail']
 		_password = request.form['inputPassword']
-<<<<<<< HEAD
-
-=======
->>>>>>> 4b27246c29576a88adcf4fa4a51687857b591a68
 		conn = mysql.connect()
 		cursor = conn.cursor()
 		cursor.callproc('sp_connect', (_email,)) #for some weird reason email is not one element but the number of char it is composed of
@@ -263,41 +258,6 @@ def showStocks():
 
 @app.route('/showPortfolio',methods=['POST','GET'])
 def showPortfolio():
-<<<<<<< HEAD
-	try:
-		#create mysql connection
-		conn = mysql.connect()
-		#create cursor
-		cursor = conn.cursor()
-
-		amountList=[ ]
-		stocksOfCurrentPortfolio = [ ]
-		cursor.callproc('sp_getLinkDataFromPortfolioID',(session['portfolio'],))
-		data = cursor.fetchall()
-		i=0
-		for each in data:
-			amountList.append(each[2])
-			cursor.callproc('sp_getStockInfoFromLinkID',(each[4],))
-			CurrentStocks = cursor.fetchall()
-			#CurrentStocksdf = pd.DataFrame(CurrentStocks[0])
-			stocksOfCurrentPortfolio.append(CurrentStocks[0])
-			#stocksOfCurrentPortfolio[0].remove(stocksOfCurrentPortfolio[i][0])
-			i=i+1
-		df = pd.DataFrame(stocksOfCurrentPortfolio)
-		df['amount'] = amountList
-		df.rename(
-            columns={0: 'id', 1: 'code', 2: 'name', 'amount': 'weight'},
-            inplace=True
-        )
-		del df['id']
-		return render_template('portfolio.html', data=df.to_html())
-	#except Exception as e:
-	# 	return render_template('error.html',error = str(e))
-	finally:
-		cursor.close()
-		conn.close()
-=======
-
 	#try:
 	conn = mysql.connect()
 	cursor = conn.cursor()
@@ -318,9 +278,8 @@ def showPortfolio():
 	portfolio = cursor.fetchall()
 	return render_template('portfolio.html', portfolioName=portfolio[0][4], portfolioAmount=portfolio[0][1], portfolioRisk=portfolio[0][5], stocks=stocks)
 	#finally:
-	cursor.close() 
+	cursor.close()
 	conn.close()
->>>>>>> 4b27246c29576a88adcf4fa4a51687857b591a68
 
 #add Bonds to the portfolio
 @app.route('/addStocks',methods=['POST'])
@@ -334,20 +293,11 @@ def addStocks():
 		isThereLinksInPortfolio = cursor.fetchall()
 		f = request.form
 		print(isThereLinksInPortfolio)
-
-
-<<<<<<< HEAD
 		#if isThereLinksInPortfolio means the portfolio is full -> ask user to modify it or create a new one.
-		if(not isThereLinksInPortfolio):
-			f = request.form
-=======
-		#if isThereLinksInPortfolio means the portfolio is full -> ask user to modify it or create a new one. 
 		if(isThereLinksInPortfolio):
 			return redirect('/showPortfolio')
 		else:
->>>>>>> 4b27246c29576a88adcf4fa4a51687857b591a68
 			caca=[ ]
-
 			for key in f.keys():
 				session['key']=int(key);
 				cursor.callproc('sp_linkStockToPortfolio', (session['portfolio'], session['key']))
@@ -355,17 +305,10 @@ def addStocks():
 				caca.append(portfolioLinkAdded[0][4])
 				conn.commit()
 			optimiz.optimiz(caca)
-<<<<<<< HEAD
-		return redirect('/showPortfolio')
-
-=======
 			return redirect('/showPortfolio')
-		
->>>>>>> 4b27246c29576a88adcf4fa4a51687857b591a68
 	finally:
 		cursor.close()
 		conn.close()
-
 
 #debug mode -> put to false when dev mode is finished
 if __name__ == '__main__':
