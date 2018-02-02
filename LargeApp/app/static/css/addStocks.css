@@ -4,13 +4,26 @@
   padding-right:  10px;
   padding-left: 50px;
 	border: 1px solid white;
-  background-color: white;
-	margin: 100px;
-	height: auto;
-	border-radius: 100px;
+  padding: 25px;
+  margin-left: 300px;
+  margin-right: 300px;
+  margin-bottom: 50px;
+  margin-top: 350px;
+	border-radius: 10px;
 	border-color: Gainsboro;
-
-
+  float: none;
+  /*position: absolute;*/
+  display: inline-block;
+}
+.bodi
+{
+  background-image: url("stocks2.jpg");
+  background-repeat: no-repeat;
+  background-size: 1500px 620px;
+}
+#pied
+{
+  /*margin-top: 10px;*/
 }
 
 #btnSignIn
@@ -18,7 +31,7 @@
 	border: 2px ;
 	padding: 10px;
 	margin-top: 20px;
-	margin-left: 310px;
+	margin-left: 250px;
 	border-radius: 20px;
 	width: 200px;
 	background-color: MidnightBlue;

@@ -1,0 +1,15 @@
+#about
+{
+  background-image: url("logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+}
+/#epm
+{
+  /*float: none;
+  position: absolute;
+  display: inline-block;
+  text-align: center;
+}*/

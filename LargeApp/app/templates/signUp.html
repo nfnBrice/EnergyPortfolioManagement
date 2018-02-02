@@ -1,9 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "index.html" %}
+{% block h %}{% endblock %}
+{% block body %}
   <head>
     <title>Login</title>
- 
-    
+
+
 <!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="static/Login_v18/images/icons/favicon.ico"/>
 <!--===============================================================================================-->
@@ -28,11 +29,11 @@
 
     <script type="text/javascript" src="../static/js/jQuery.js"></script>
     <script type="text/javascript" src="../static/js/signUp.js"></script>
-    
+
   </head>
- 
+
   <body>
- 
+
 <body style="background-color: #666666;">
 
 	<div class="limiter">
@@ -59,18 +60,13 @@
 				        <span class="focus-input100"></span>
 				        <label for="inputPassword" class="label-input100">Password</label>
 				        <input type="password" name="inputPassword" class="input100"  required autofocus>
-				    </div>     
+				    </div>
 				    <button id="btnSignUp" class="login100-form-btn" type="button">Sign up</button>
 		      	</form>
 
 		      </div>
- 
-       
- 
-      <footer class="footer">
-        <p>&copy; Company 2015</p>
-      </footer>
- 
+
+
     </div>
   </body>
-</html>
+{% endblock %}

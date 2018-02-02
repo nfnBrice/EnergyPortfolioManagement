@@ -10,14 +10,12 @@
     <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet"> -->
     <script src="../static/js/jquery-1.11.2.js"></script>
     <link href="/static/css/addStocks.css" rel="stylesheet">
-
   </head>
 
-  <body>
-    <section div="sectionaddsto">
+  <body class="bodi">
 
-      <div class="container">
-
+    <div class="sectionaddsto">
+      <!--<img class="w3-image" src="/static/img/stocks2.jpg">-->
         <div class="jumbotron">
           <h1>List of Stocks</h1>
           <form class="form-createPortfolio" action="/addStocks" method="post">
@@ -26,6 +24,10 @@
                 <th> Name</th>
                 <th> Code </th>
                 <th> Select </th>
+                <th> Select1 </th>
+                <th> Select2 </th>
+                <th> Select3 </th>
+
               </tr>
             {% for stock in data %}
               <tr>
@@ -42,11 +44,9 @@
             {% endfor %}
           </table>
 
-            <button id="btnSignIn" class="btn btn-lg btn-primary btn-block" type="submit"> Add </button>
+            <button id="btnSignIn" class="btn btn-lg btn-primary btn-block" type="submit"> Add a Stock </button>
           </form>
         </div>
-      </div>
-
-    </section>
+    </div>
   </body>
 {% endblock %}
