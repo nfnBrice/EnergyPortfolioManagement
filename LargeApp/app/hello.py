@@ -51,15 +51,17 @@ def showCreatePortfolio():
 
 #page de tutoriel à faire avant cette page la
 @app.route('/createPortfolio', methods=['POST','GET'])
-def createPortfolio():
+def addPortfolio():
 	#create mysql connection
 	conn = mysql.connect()
 	#create cursor
 	cursor = conn.cursor()
 	try:
 		# read the posted values from the UI
+		_name = request.form['inputName']
 		_amount = request.form['inputAmount']
 		_horizon = request.form['inputHorizon']
+		_risk = request.form['inputRisk']
 		_knowledge = request.form['inputKnowledge']
 
 		# validate the received values
@@ -67,8 +69,13 @@ def createPortfolio():
 			if _knowledge is 0:
 				return render_template('tutorial.html')
 			else :
+<<<<<<< HEAD
 				#find portfolio
 				cursor.callproc('sp_createPortfolio', (_amount, _horizon, session['user']))
+=======
+				#find portfolio 
+				cursor.callproc('sp_createPortfolio', (_amount, _horizon, session['user'],_name,_risk))
+>>>>>>> 4b27246c29576a88adcf4fa4a51687857b591a68
 				data = cursor.fetchall()
 				if len(data) is 0:
 					return json.dumps({'error':str(data[0])})
@@ -76,7 +83,6 @@ def createPortfolio():
 					conn.commit()
 					session['portfolio'] = data[0][0]
 					return redirect('/showAddStocks')
-
 		else:
 			return json.dumps({'html':'<span>Enter the required fields</span>'})
 	#except Exception as e:
@@ -86,11 +92,86 @@ def createPortfolio():
 		conn.close()
 
 @app.route('/userHome')
-def userHome():
+def UserHome():
 	if session.get('user'):
-		return render_template('userHome.html')
+		try: 
+			#create mysql connection
+			conn = mysql.connect()
+			#create cursor
+			cursor = conn.cursor()
+			cursor.callproc('sp_getPortfoliosPerUser',(session['user'],))
+			data = cursor.fetchall()
+			return render_template('userHome.html',data=data)
+		finally:
+			cursor.close() 
+			conn.close()
 	else:
 		return render_template('error.html',error = 'Unauthorized Access')
+
+@app.route('/deletePortfolio', methods=['POST','GET'])
+def deletePortfolio():
+		try: 
+			#create mysql connection
+			conn = mysql.connect()
+			cursor = conn.cursor()
+			_portfolioToDelete = request.form['inputPortfolioToDelete']
+			#create cursor
+			_int_portfolioToDelete= int(_portfolioToDelete)
+			print(_int_portfolioToDelete)
+			cursor.callproc('sp_deletePortfolio',(_int_portfolioToDelete,)) 
+			conn.commit()
+			return redirect('/userHome')
+		finally:
+			cursor.close() 
+			conn.close()
+
+@app.route('/showUpdatePortfolio', methods=['POST','GET'])
+def showUpdatePortfolio():
+	#	try: 
+	#		conn = mysql.connect()
+	#		cursor = conn.cursor()
+	#		_portfolioToUpdate = request.form['inputPortfolioToUpdate']
+	#		session['portfolio']=int(_portfolioToUpdate)
+	#		cursor.callproc('sp_getPortfolioFromPortfolioID',(session['portfolio']))
+	#		data = cursor.fetchall()
+
+	#		return render_template('updatePortfolio.html', data=)
+	#try:
+	conn = mysql.connect()
+	cursor = conn.cursor()
+	stocks = [ ]
+	cursor.callproc('sp_getLinkDataFromPortfolioID',(session['portfolio'],))
+	data = cursor.fetchall()
+	i=0
+
+	for each in data:
+		CurrentStock = [ ]
+		cursor.callproc('sp_getStockInfoFromLinkID',(each[4],))
+		CurrentStocks = cursor.fetchall()
+		CurrentStock.append(each[2])
+		CurrentStock.append(CurrentStocks[0][2])
+		CurrentStock.append(CurrentStocks[0][1])
+		stocks.append(CurrentStock)
+	cursor.callproc('sp_getPortfolioFromPortfolioID',(session['portfolio'],))
+	portfolio = cursor.fetchall()
+	return render_template('updatePortfolio.html', portfolioName=portfolio[0][4], portfolioAmount=portfolio[0][1], portfolioRisk=portfolio[0][5], stocks=stocks)
+	#finally:
+	cursor.close() 
+	conn.close()
+
+"""@app.route('/updatePortfolio', methods=['POST','GET'])
+def updatePortfolio():
+		try: 
+			#create mysql connection
+			conn = mysql.connect()
+			cursor = conn.cursor()
+			_portfolioToUpdate = request.form['inputPortfolioToUpdate']
+			#create cursor
+			session['portfolio']=int(_portfolioToUpdate)
+			return redirect('/updatePortfolio')
+		finally:
+			cursor.close() 
+			conn.close()"""
 
 @app.route('/logout')
 def logout():
@@ -136,7 +217,10 @@ def signIn():
 	try:
 		_email = request.form['inputEmail']
 		_password = request.form['inputPassword']
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4b27246c29576a88adcf4fa4a51687857b591a68
 		conn = mysql.connect()
 		cursor = conn.cursor()
 		cursor.callproc('sp_connect', (_email,)) #for some weird reason email is not one element but the number of char it is composed of
@@ -146,7 +230,7 @@ def signIn():
 			session['user'] = data[0][0]
 			if check_password_hash(str(data[0][3]),_password):
 				session['user'] = data[0][0]
-				return redirect('/showCreatePortfolio')
+				return redirect('/userHome')
 			else:
 				return render_template('error.html',error = 'Wrong Email address or Password.')
 		else:
@@ -177,8 +261,9 @@ def showStocks():
 		cursor.close()
 		conn.close()
 
-@app.route('/showPortfolio')
+@app.route('/showPortfolio',methods=['POST','GET'])
 def showPortfolio():
+<<<<<<< HEAD
 	try:
 		#create mysql connection
 		conn = mysql.connect()
@@ -211,6 +296,31 @@ def showPortfolio():
 	finally:
 		cursor.close()
 		conn.close()
+=======
+
+	#try:
+	conn = mysql.connect()
+	cursor = conn.cursor()
+	stocks = [ ]
+	cursor.callproc('sp_getLinkDataFromPortfolioID',(session['portfolio'],))
+	data = cursor.fetchall()
+	i=0
+
+	for each in data:
+		CurrentStock = [ ]
+		cursor.callproc('sp_getStockInfoFromLinkID',(each[4],))
+		CurrentStocks = cursor.fetchall()
+		CurrentStock.append(each[2])
+		CurrentStock.append(CurrentStocks[0][2])
+		CurrentStock.append(CurrentStocks[0][1])
+		stocks.append(CurrentStock)
+	cursor.callproc('sp_getPortfolioFromPortfolioID',(session['portfolio'],))
+	portfolio = cursor.fetchall()
+	return render_template('portfolio.html', portfolioName=portfolio[0][4], portfolioAmount=portfolio[0][1], portfolioRisk=portfolio[0][5], stocks=stocks)
+	#finally:
+	cursor.close() 
+	conn.close()
+>>>>>>> 4b27246c29576a88adcf4fa4a51687857b591a68
 
 #add Bonds to the portfolio
 @app.route('/addStocks',methods=['POST'])
@@ -218,13 +328,24 @@ def addStocks():
 	conn = mysql.connect()
 	#create cursor
 	cursor = conn.cursor()
+	print(session['portfolio'])
 	try:
 		cursor.callproc('sp_getLinkDataFromPortfolioID', (session['portfolio'],))
 		isThereLinksInPortfolio = cursor.fetchall()
+		f = request.form
+		print(isThereLinksInPortfolio)
 
+
+<<<<<<< HEAD
 		#if isThereLinksInPortfolio means the portfolio is full -> ask user to modify it or create a new one.
 		if(not isThereLinksInPortfolio):
 			f = request.form
+=======
+		#if isThereLinksInPortfolio means the portfolio is full -> ask user to modify it or create a new one. 
+		if(isThereLinksInPortfolio):
+			return redirect('/showPortfolio')
+		else:
+>>>>>>> 4b27246c29576a88adcf4fa4a51687857b591a68
 			caca=[ ]
 
 			for key in f.keys():
@@ -233,11 +354,14 @@ def addStocks():
 				portfolioLinkAdded = cursor.fetchall()
 				caca.append(portfolioLinkAdded[0][4])
 				conn.commit()
-
-			#print(caca)
 			optimiz.optimiz(caca)
+<<<<<<< HEAD
 		return redirect('/showPortfolio')
 
+=======
+			return redirect('/showPortfolio')
+		
+>>>>>>> 4b27246c29576a88adcf4fa4a51687857b591a68
 	finally:
 		cursor.close()
 		conn.close()
