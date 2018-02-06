@@ -3,8 +3,33 @@
   background-image: url("logo.png");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: contain;
+  background-size: 800px 600px;
 
+}
+#textdiv1{
+  /*margin-right: 500px;
+  margin-top: 300px;
+  float: left;*/
+  display:inline-block;
+  text-align: justify;
+  padding: 10px;
+  border: 1px hidden #F0FFF0;
+  text-decoration-style: dashed;
+}
+#textdiv2{
+  /*margin-left: 500px;
+  float:right;
+  display:inline-block;*/
+  margin-top: 50px;
+  border: 1px hidden #F0FFF0;
+  border-style:
+  float:right;
+  text-align: justify;
+  text-decoration-style: dashed;
+
+}
+#get{
+  margin-top: 50px;
 }
 /#epm
 {

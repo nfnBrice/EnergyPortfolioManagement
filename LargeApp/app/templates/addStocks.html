@@ -1,6 +1,8 @@
 {% extends "index.html" %}
 {% block h %}{% endblock %}
 {% block body %}
+{% block fr %}Log out {% endblock %}
+{% block fra %}{% endblock %}
   <head>
     <title>Add Stocks</title>
 
@@ -18,8 +20,8 @@
       <!--<img class="w3-image" src="/static/img/stocks2.jpg">-->
         <div class="jumbotron">
           <h1>List of Stocks</h1>
+          <div class="scroll">
           <form class="form-addStocks" action="/addStocks" method="post">
-            <table>
               <tr>
                 <th> Name</th>
                 <th> Code </th>
@@ -43,6 +45,7 @@
               </tr>
             {% endfor %}
           </table>
+
 
             <button id="btnSignIn" class="btn btn-lg btn-primary btn-block" type="submit"> Add a Stock </button>
 
