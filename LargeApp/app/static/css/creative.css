@@ -8,6 +8,10 @@ html {
   width: 100%;
   height: 100%; }
 
+#titre{
+  color: Green;
+}
+
 body {
   font-family: 'Merriweather', 'Helvetica Neue', Arial, sans-serif; }
 
@@ -237,6 +241,36 @@ header.masthead {
 
 .btn-xl {
   padding: 1rem 2rem; }
+
+
+.tablePortfolio{
+  width: 500px;
+  min-height: 100vh;
+  display: block;
+  background-color: #f7f7f7;
+  padding: 160px 55px 55px 55px;
+  }
+
+  .portfoliobackground {
+    width: calc(100% - 560px);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .portfoliobackground::before {
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.1);
+  }
 
 .btn-primary {
   background-color: DarkDarkGreen;

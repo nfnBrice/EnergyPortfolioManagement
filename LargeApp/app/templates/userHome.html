@@ -12,17 +12,16 @@
     <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet"> -->
     <script src="../static/js/jquery-1.11.2.js"></script>
     <script src="../static/js/Portfolio.js"></script>
-    <link href="/static/css/addStocks.css" rel="stylesheet">
+    <link href="/static/css/userHome.css" rel="stylesheet">
 
   </head>
 
-  <body>
+  <body class="bodi">
     <section div="sectionaddsto">
-
       <div class="container">
-
         <div class="jumbotron">
           <h1>List of Portfolios</h1>
+          <hr id="Separe">
           <table>
             <tr>
               <th> Name</th>
@@ -64,7 +63,7 @@
               </tr>
             {% endfor %}
           </table>
-            <a class="btn btn-lg btn-primary btn-block" href="/showCreatePortfolio">Create</a>
+            <a class="btn btn-lg btn-primary btn-block" id = "create" href="/showCreatePortfolio">Create</a>
         </div>
       </div>
 

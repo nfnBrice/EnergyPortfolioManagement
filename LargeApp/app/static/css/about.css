@@ -1,9 +1,11 @@
 #about
 {
-  background-image: url("logo.png");
+  /*background-image: url("logo.png");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 800px 600px;
+  background-size: 800px 600px;*/
+  font-family: 'Merriweather', 'Helvetica Neue', Arial, sans-serif;
+
 
 }
 #textdiv1{
@@ -15,6 +17,8 @@
   padding: 10px;
   border: 1px hidden #F0FFF0;
   text-decoration-style: dashed;
+  font-family: 'Merriweather', 'Helvetica Neue', Arial, sans-serif;
+
 }
 #textdiv2{
   /*margin-left: 500px;
@@ -26,10 +30,14 @@
   float:right;
   text-align: justify;
   text-decoration-style: dashed;
+  font-family: 'Merriweather', 'Helvetica Neue', Arial, sans-serif;
+
 
 }
 #get{
   margin-top: 50px;
+  font-family: 'Merriweather', 'Helvetica Neue', Arial, sans-serif;
+
 }
 /#epm
 {

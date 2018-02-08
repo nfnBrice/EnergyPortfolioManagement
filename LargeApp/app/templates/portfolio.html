@@ -4,12 +4,12 @@
 {% block fra %}{% endblock %}
 {% block body %}
   <head>
-    <link href="/static/css/updatePortfolio.css" rel="stylesheet">
+    <link href="/static/css/portfolio.css" rel="stylesheet">
   </head>
   <body>
-    <div class="container">
-       <div class="jumbotron">
-        <table>
+
+        <table class="tablePortfolio">
+          <thead>
           <tr>
             <th>
               Name
@@ -24,6 +24,9 @@
               Stocks
             </th>
           </tr>
+        </thead>
+
+        <tbody>
           <tr>
             <td>
               {% print(portfolioName) %}
@@ -35,6 +38,7 @@
               {% print(portfolioAmount) %}
             </td>
             <td>
+          </tbody>
                 <table>
                   <tr>
                     <th> Stock Name</th>
@@ -57,8 +61,12 @@
               </table>
             </td>
           </tr>
+          </tbody>
         </table>
-      </div>
-    </div>
+
+      <!--<div class="portfoliobackground">
+        <img src="static/img/stocks2.jpg" alt="Smiley face" >
+      </div>-->
+    <hr>
   </body>
 {% endblock %}
